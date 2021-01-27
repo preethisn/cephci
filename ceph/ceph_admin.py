@@ -223,6 +223,79 @@ class CephAdmin:
         elif op == 'remove':
             # todo: add code for removing host
             raise NotImplementedError
+    
+    #Adding  label to the hosts
+
+    def label_host(self):
+        node_mon = self.cluster.get_nodes(role="mon")
+        node_mgr = self.cluster.get_nodes(role="mgr")
+        node_osd = self.cluster.get_nodes(role="osd")
+        node_mds = self.cluster.get_nodes(role="mds")
+        node_rgw = self.cluster.get_nodes(role="rgw")
+        node_client = self.cluster.get_nodes(role="client")
+        # self.ceph_iscsi(self.cluster.get_nodes(role="iscsi"))
+        for node in node_mon:
+            logger.info("adding label mon on %s" % (node.hostname))
+            self.shell(
+                    remote=self.installer,
+                    args=[
+                        'ceph', 'orch', 'host','label', 'add',
+                        node.hostname,'mon'
+                    ]
+                )
+
+
+        for node in node_mgr:
+            logger.info("adding label mgr on %s" % (node.hostname))
+            self.shell(
+                    remote=self.installer,
+                    args=[
+                        'ceph', 'orch', 'host','label', 'add',
+                        node.hostname,'mgr'
+                    ]
+                )
+
+        for node in node_osd:
+            logger.info("adding label osd on %s" % (node.hostname))
+            self.shell(
+                    remote=self.installer,
+                    args=[
+                        'ceph', 'orch', 'host','label', 'add',
+                        node.hostname,'osd'
+                    ]
+                )
+
+        for node in node_mds:
+            logger.info("adding label mds on %s" % (node.hostname))
+            self.shell(
+                    remote=self.installer,
+                    args=[
+                        'ceph', 'orch', 'host','label', 'add',
+                        node.hostname,'mds'
+                    ]
+                )
+        for node in node_rgw:
+            logger.info("adding label rgw on %s" % (node.hostname))
+            self.shell(
+                    remote=self.installer,
+                    args=[
+                        'ceph', 'orch', 'host','label', 'add',
+                        node.hostname,'rgw'
+                    ]
+                )
+
+        for node in node_client:
+            logger.info("adding label client on %s" % (node.hostname))
+            self.shell(
+                    remote=self.installer,
+                    args=[
+                        'ceph', 'orch', 'host','label', 'add',
+                        node.hostname,'client'
+                    ]
+                )
+
+
+            
 
     def add_daemons(self):
         """
