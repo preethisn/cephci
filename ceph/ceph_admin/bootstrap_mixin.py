@@ -9,7 +9,15 @@ from utility.utils import get_cephci_config
 logger = logging.getLogger(__name__)
 
 
+
 class BootstrapMixin:
+
+    def get_method(self, key):
+        verify_map = {
+            "fsid": self.validate_fsid,
+        }
+        return verify_map.get(key)
+
     def bootstrap(self):
         """
         Bootstrap the ceph cluster with supported options
@@ -52,11 +60,15 @@ class BootstrapMixin:
             "--mon-ip {mon_ip}"
         )
 
+
+
         cmd = cmd.format(
             user=cdn_cred.get("username"),
             password=cdn_cred.get("password"),
             mon_ip=self.installer.node.ip_address,
         )
+        if self.config.get("args",{}).get("fsid"):
+            cmd += " --fsid " + str(self.config.get("args",{}).get("fsid"))
 
         out, err = self.installer.exec_command(
             sudo=True,
@@ -68,4 +80,25 @@ class BootstrapMixin:
         logger.info("Bootstrap output : %s", out.read().decode())
         logger.error("Bootstrap error: %s", err.read().decode())
 
+
+#        if self.config.get("fsid"):
+#           self.validate_fsid()
+
         self.distribute_cephadm_gen_pub_key()
+
+
+    # Verification of arguments
+
+        args = self.config.get("args", {})
+        logger.info(args)
+        for key, value in args.items():
+            func = self.get_method(key)
+            if not func:
+                continue
+            if not func(value):
+                raise AssertionError
+
+    def validate_fsid(self, fsid) -> bool:
+        out, err = self.shell(remote=self.installer, args = ['ceph', 'fsid'])
+        logger.info("Installed with custom fsid %s", fsid)
+        return out == fsid

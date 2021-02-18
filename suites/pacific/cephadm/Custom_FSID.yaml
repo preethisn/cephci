@@ -1,0 +1,18 @@
+tests:
+  - test:
+      name: Install ceph pre-requisites
+      desc: installation of ceph pre-requisites
+      module: install_prereq.py
+      abort-on-fail: true
+  - test:
+      name: Cephadm Bootstrap
+      desc: cephadm cluster bootstrap
+      module: test_cephadm.py
+      polarion-id:
+      config:
+        registry: false
+        bootstrap: true
+        args:
+          fsid: 61a48be8-67c4-4a96-a3ac-69dc53300108
+      destroy-cluster: false
+      abort-on-fail: true
